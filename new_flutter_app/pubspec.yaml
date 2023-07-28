@@ -35,6 +35,8 @@ dependencies:
   provider: ^6.0.0
   audioplayers: ^4.1.0
   awesome_notifications: any
+  firebase_core: ^2.15.0
+  firebase_auth: ^4.7.2
 
 dev_dependencies:
   flutter_test:
