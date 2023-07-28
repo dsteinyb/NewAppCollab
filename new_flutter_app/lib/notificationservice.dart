@@ -37,9 +37,10 @@ class NotificationService {
   }
 
   Future<void> showNotification(int id, String title, String body) async {
-    final player = AudioPlayer();
-    await player.play(UrlSource('https://file-examples.com/storage/fee472ce6e64b122ba0c8b3/2017/11/file_example_WAV_2MG.wav'));
+    // final player = AudioPlayer();
+    // await player.play(UrlSource('https://file-examples.com/storage/fee472ce6e64b122ba0c8b3/2017/11/file_example_WAV_2MG.wav'));
 
+    final now = DateTime.now();
     AwesomeNotifications().createNotification(
       content: NotificationContent(
           id: id,
@@ -47,7 +48,7 @@ class NotificationService {
           title: title,
           body: body,
           actionType: ActionType.Default
-      ), schedule: NotificationCalendar.fromDate(date: DateTime(2023, 7, 20, 17, 48, 0))
+      )
     );
   }
 }
