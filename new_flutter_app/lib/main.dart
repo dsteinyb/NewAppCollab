@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:new_flutter_app/notificationservice.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:new_flutter_app/meditations.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 void main() async {
 // to ensure all the widgets are initialized.
@@ -12,6 +15,7 @@ void main() async {
 
 // to initialize the notificationservice.
   NotificationService().initNotification();
+  Meditations().listMeds();
   runApp(const MyApp());
 }
 
@@ -20,7 +24,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -41,8 +44,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  TextEditingController Notification_title = TextEditingController();
-  TextEditingController Notification_descrp = TextEditingController();
+  final player = AudioPlayer();
+  final urls = Meditations().listMeds();
 
   @override
   void initState() {
@@ -52,58 +55,49 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("GeeksForGeeks"),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: TextField(
-                controller: Notification_title,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Enter Title",
+    return FutureBuilder<List<String>>(
+        future: Meditations().listMeds(),
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // If we got an error
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  '${snapshot.error} occurred',
+                  style: TextStyle(fontSize: 18),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: TextField(
-                controller: Notification_descrp,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Enter Description",
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: GestureDetector(
-                onTap: () {
-                  NotificationService().showNotification(
-                      1, Notification_title.text, Notification_descrp.text);
-                },
-                child: Container(
-                  height: 40,
-                  width: 200,
-                  color: Colors.green,
-                  child: Center(
-                    child: Text(
-                      "Show Notification",
-                      style: TextStyle(color: Colors.white),
+              );
+
+              // if we got our data
+            } else if (snapshot.hasData) {
+              // Extracting data from snapshot object
+              final urls = snapshot.data;
+              return Material(
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text('You have ${urls!.length} sounds:'),
                     ),
-                  ),
+                    for (var url in urls)
+                      Row(children: [
+                        IconButton(
+                            icon: Icon(Icons.play_circle_outline),
+                            onPressed: () => player.play(UrlSource(url))),
+                        Text(FirebaseStorage.instance.refFromURL(url).name)
+                        //Text(url)
+                      ]),
+                  ],
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+              );
+            } else {
+              return Placeholder();
+            }
+          }
+          // Displaying LoadingSpinner to indicate waiting state
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        });
   }
 }
