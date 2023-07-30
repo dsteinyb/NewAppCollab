@@ -5,6 +5,8 @@ import 'firebase_options.dart';
 import 'package:new_flutter_app/meditations.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 void main() async {
 // to ensure all the widgets are initialized.
