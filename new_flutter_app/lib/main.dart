@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_flutter_app/auth_service.dart';
 import 'package:new_flutter_app/notificationservice.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -89,6 +90,19 @@ class _MyHomePageState extends State<MyHomePage> {
                         Text(FirebaseStorage.instance.refFromURL(url).name)
                         //Text(url)
                       ]),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text('Google Sign In:'),
+                    ),
+                    const Text("Hello, \nGoogle Sign In",
+                      style: TextStyle(
+                        fontSize: 30
+                      )),
+                    GestureDetector(
+                      onTap: () {
+                        AuthService().signInWithGoogle();
+                      },
+                      child: const Image(width: 100, image: AssetImage('assets/google.png'))),
                   ],
                 ),
               );
